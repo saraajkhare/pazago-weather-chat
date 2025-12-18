@@ -6,7 +6,7 @@ const messageSound = new Audio("/message.mp3");
 export const useWeatherAgent = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -20,69 +20,54 @@ export const useWeatherAgent = () => {
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
 
-    const userMsg: Message = {
+    setLoading(true);
+
+    const userMessage: Message = {
       id: crypto.randomUUID(),
       role: "user",
       content: text,
       timestamp: new Date().toLocaleTimeString(),
-      status: "sending",
     };
 
-    setMessages(prev => [...prev, userMsg]);
-    setLoading(true);
+    setMessages(prev => [...prev, userMessage]);
     scrollToBottom();
 
     try {
-      const res = await fetch(
-        "https://brief-thousands-sunset-9fcb1c78-485f-4967-ac04-2759a8fa1462.mastra.cloud/api/agents/weatherAgent/stream",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-mastra-dev-playground": "true",
-          },
-          body: JSON.stringify({
-            messages: [{ role: "user", content: text }],
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:3001/weather", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    prompt: text,
+    stream: false,
+  }),
+});
 
-      setMessages(prev =>
-        prev.map(m =>
-          m.id === userMsg.id ? { ...m, status: "sent" } : m
-        )
-      );
 
-      let agentText = "";
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          agentText += decoder.decode(value);
-        }
+      if (!res.ok) {
+        throw new Error("API failed");
       }
 
-      messageSound.play();
+      const data = await res.json();
 
+      const agentMessage: Message = {
+        id: crypto.randomUUID(),
+        role: "agent",
+        content: data?.data?.response ?? "No response received.",
+        timestamp: new Date().toLocaleTimeString(),
+      };
+
+      setMessages(prev => [...prev, agentMessage]);
+      messageSound.play().catch(() => {});
+    } catch {
       setMessages(prev => [
         ...prev,
         {
           id: crypto.randomUUID(),
           role: "agent",
-          content: agentText || "Weather data unavailable.",
+          content: "Something went wrong. Please try again.",
           timestamp: new Date().toLocaleTimeString(),
-          status: "sent",
         },
       ]);
-    } catch {
-      setMessages(prev =>
-        prev.map(m =>
-          m.id === userMsg.id ? { ...m, status: "failed" } : m
-        )
-      );
     } finally {
       setLoading(false);
       scrollToBottom();
@@ -91,8 +76,8 @@ export const useWeatherAgent = () => {
 
   const reactToMessage = (id: string, reaction: "up" | "down") => {
     setMessages(prev =>
-      prev.map(m =>
-        m.id === id ? { ...m, reaction } : m
+      prev.map(msg =>
+        msg.id === id ? { ...msg, reaction } : msg
       )
     );
   };

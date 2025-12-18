@@ -4,5 +4,4 @@ export type Message = {
   content: string;
   timestamp: string;
   reaction?: "up" | "down";
-  status?: "sending" | "sent" | "failed";
 };

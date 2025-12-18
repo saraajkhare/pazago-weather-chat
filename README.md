@@ -1,124 +1,137 @@
+# Pazago Weather Chat
 
-# 🌦 Weather Agent Chat Interface
+Pazago Weather Chat is a simple chat-based web application that allows users to ask natural language questions about the weather in different cities and receive detailed responses in real time.
 
-This is a responsive chat application built using **React and TypeScript** that allows users to interact with a weather agent through a streaming API.
+This project was built as part of a frontend assignment, with emphasis on clean UI, correct API integration, and a practical, production-style architecture.
 
-The project was created as part of the **Frontend Engineer Assignment for Pazago**, with a focus on clean UI, smooth user experience, and correct API integration.
+---
 
-## ✨ What this project does
+## Features
 
-- Lets users ask weather-related questions in a chat format  
-- Displays user messages on the right and agent responses on the left  
-- Shows loading indicators while the agent is responding  
-- Automatically scrolls to the latest message  
-- Works smoothly on mobile, tablet, and desktop screens  
+* Chat-based weather queries
+* Real-time responses from a weather agent
+* Automatic scroll to latest message
+* Message timestamps
+* Message reactions (thumbs up / thumbs down)
+* Light and dark theme toggle
+* Export chat history
+* Graceful error handling
 
-The UI follows a **mobile-first approach** and matches the design expectations mentioned in the assignment.
+---
 
-## 🛠 Tech Stack Used
+## Tech Stack
 
-- **React**
-- **TypeScript**
-- **Vite**
-- **Tailwind CSS**
+**Frontend**
 
-## 🚀 How to run the project locally
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
 
-Follow the steps below to run the application on your system:
+**Backend**
 
-### 1️⃣ Clone the repository
+* Node.js
+* Express.js
+
+---
+
+## Project Structure
+
+```
+pazago-weather-chat
+├── server.js
+├── src
+│   ├── components
+│   ├── hooks
+│   ├── types
+│   ├── App.tsx
+│   └── main.tsx
+├── public
+├── README.md
+└── package.json
+```
+
+---
+
+## Setup Instructions
+
+### 1. Clone the repository
 
 ```bash
-git clone <YOUR_GITHUB_REPO_LINK>
+git clone https://github.com/<your-username>/pazago-weather-chat.git
 cd pazago-weather-chat
-````
+```
 
-### 2️⃣ Install dependencies
+---
+
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3️⃣ Start the development server
+---
+
+### 3. Start the backend server
+
+```bash
+node server.js
+```
+
+The backend server runs on:
+
+```
+http://localhost:3001
+```
+
+---
+
+### 4. Start the frontend application
 
 ```bash
 npm run dev
 ```
 
-Once the server starts, open the browser and go to:
+The frontend will be available at:
 
 ```
 http://localhost:5173
 ```
+## API Integration Approach
 
-## 🔌 API Details
+The external weather API used in this project does not allow direct requests from the browser due to CORS restrictions.
 
-The application connects to the Weather Agent Streaming API provided in the assignment.
-
-**API Endpoint:**
-
+To handle this correctly, a Node.js Express backend is used as a proxy between the frontend and the external API.
+### Request flow:
 ```
-POST https://brief-thousands-sunset-9fcb1c78-485f-4967-ac04-2759a8fa1462.mastra.cloud/api/agents/weatherAgent/stream
+React Frontend → Express Backend → External Weather API
+React Frontend ← Express Backend ← External Weather API
 ```
+This approach reflects common real-world production setups and avoids CORS-related issues.
 
-The `threadId` used in the request body is set to my college roll number as required:
+## Brief Explanation of the Approach
 
-```
-2024510028
-```
+The application is designed as a conversational interface to make weather queries more natural for users.
+A custom React hook (`useWeatherAgent`) is responsible for managing messages, API calls, loading state, and UI updates.
 
-## 💬 Example Questions You Can Try
+The backend acts as a lightweight proxy layer that forwards requests to the weather agent API and returns the response to the frontend.
 
-* What's the weather in London?
-* Will it rain tomorrow in Mumbai?
-* Weather forecast for New York
+## Assumptions Made
 
+* Users will primarily ask weather-related questions
+* A single weather agent endpoint is sufficient
+* Streaming responses are not required for this assignment
+* Chat data does not need to persist across page reloads
 
-## 📱 Responsive Design
+## Known Limitations and Areas for Improvement
 
-* Mobile-first design approach
-* Fully responsive on mobile, tablet, and desktop
-* Minimum supported width: **320px**
+* Chat history resets on refresh
+* No user authentication or persistence
+* Streaming responses can be added for improved UX
+* Backend can be deployed for production use
+* More detailed API error messages can be surfaced to users
 
-## ⚠️ Known Limitations
+## Conclusion
 
-* Chat history is not persisted after page refresh
-* Error handling is basic and focused on user feedback
-
-## 👤 Author
-
-**Name:** Sara Khare (MCA)
-**Role:** Frontend Engineer Candidate
-
-## 🧠 Approach
-
-The goal of this project was to build a clean, responsive chat interface that allows users to interact with a weather agent through a streaming API.
-
-I started by setting up a React + Vite + TypeScript project and structured the application into small, reusable components such as the chat window, message bubble, input area, and top bar. A custom React hook (`useWeatherAgent`) was used to handle API communication, message state management, loading states, auto-scrolling, and error handling.
-
-The UI was designed using **Tailwind CSS** with a mobile-first approach to ensure responsiveness across devices. Special attention was given to user experience by adding features like typing indicators, timestamps, disabled input during API calls, and smooth scrolling.
-
-The streaming API response is read incrementally and displayed once the full response is received, ensuring reliable handling of partial chunks and errors.
-
-
-## 📝 Assumptions
-
-* The weather agent API is assumed to be **always available** and does not require authentication beyond the provided headers.
-* The API response is assumed to return **valid readable stream data**.
-* Only a **single chat thread** is required for this assignment.
-* Weather queries are assumed to be **natural language inputs** (e.g., “What’s the weather in London?”).
-* UI design reference from the provided Figma file is treated as a **guideline**, not a strict pixel-perfect requirement.
-
-
-## ⚠️ Known Limitations & Areas for Improvement
-
-* Real-time **word-by-word streaming display** can be improved by rendering partial chunks instead of waiting for the full response.
-* Message history is stored only in memory; it resets on page refresh. Persisting data using localStorage or a backend would improve usability.
-* Advanced accessibility features (ARIA labels, screen reader support) can be further enhanced.
-* Unit tests (Jest / React Testing Library) can be added for better test coverage.
-* Dark mode is implemented at a basic level and can be expanded with system theme detection.
-* Exporting chat history currently supports basic text output and can be extended to support multiple formats (PDF/JSON).
-
-
-
-
+This project demonstrates a clean frontend implementation, proper API handling, and a practical separation between frontend and backend concerns.
+The focus was on writing readable, maintainable code while keeping the user experience simple and intuitive.
