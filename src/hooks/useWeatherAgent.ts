@@ -4,7 +4,10 @@ import type { Message } from "../types/message";
 const messageSound = new Audio("/message.mp3");
 
 // ✅ Render backend URL
-const API_URL = "https://pazago-weather-chat.onrender.com/weather";
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 
 export const useWeatherAgent = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -36,7 +39,7 @@ export const useWeatherAgent = () => {
     scrollToBottom();
 
     try {
-      const res = await fetch(API_URL, {
+      const res = await fetch(`${API_URL}/weather`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
