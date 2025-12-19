@@ -1,18 +1,55 @@
-type Props = {
-  onClear: () => void;
-  onExport: () => void;
+import type { Message } from "../types/message";
+
+type TopBarProps = {
   onToggleTheme: () => void;
+  onClear: () => void;
+  messages: Message[];
 };
 
-const TopBar = ({ onClear, onExport, onToggleTheme }: Props) => {
+const TopBar = ({ onToggleTheme, onClear, messages }: TopBarProps) => {
+  const exportChat = () => {
+    const text = messages
+      .map(m => `${m.role.toUpperCase()}: ${m.content}`)
+      .join("\n\n");
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "chat-history.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="border-b px-4 py-3 flex justify-between items-center
-      bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-      <h1 className="font-medium text-sm">🌦 Weather Agent</h1>
-      <div className="flex gap-4 text-xs">
-        <button onClick={onToggleTheme}>🌙</button>
-        <button onClick={onExport}>Export</button>
-        <button onClick={onClear} className="text-red-500">Clear</button>
+    <div className="flex items-center justify-between px-4 py-3 border-b dark:border-gray-700">
+      <h1 className="text-lg font-semibold dark:text-white">
+        Weather Agent
+      </h1>
+
+      <div className="flex gap-2">
+        <button
+          onClick={exportChat}
+          className="px-3 py-1 text-sm rounded border dark:border-gray-600 dark:text-white"
+        >
+          Export
+        </button>
+
+        <button
+          onClick={onClear}
+          className="px-3 py-1 text-sm rounded border dark:border-gray-600 dark:text-white"
+        >
+          Clear
+        </button>
+
+        <button
+          onClick={onToggleTheme}
+          className="px-3 py-1 text-sm rounded border dark:border-gray-600 dark:text-white"
+        >
+          Toggle theme
+        </button>
       </div>
     </div>
   );
