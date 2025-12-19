@@ -1,37 +1,30 @@
-import { useEffect } from "react";
 import MessageBubble from "./MessageBubble";
 import TypingIndicator from "./TypingIndicator";
-import { useWeatherAgent } from "../hooks/useWeatherAgent";
+import type { Message } from "../types/message";
+import type { RefObject } from "react";
 
-const ChatWindow = () => {
-  const {
-    messages,
-    loading,
-    reactToMessage,
-    containerRef,
-  } = useWeatherAgent();
+type Props = {
+  messages: Message[];
+  containerRef: RefObject<HTMLDivElement | null>;
+};
 
-  useEffect(() => {
-    containerRef.current?.scrollTo({
-      top: containerRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages, containerRef]);
-
+const ChatWindow = ({ messages, containerRef }: Props) => {
   return (
     <div
       ref={containerRef}
       className="flex-1 overflow-y-auto px-4 py-6 space-y-4"
     >
-      {messages.map(msg => (
-        <MessageBubble
-          key={msg.id}
-          message={msg}
-          onReact={reactToMessage}
-        />
+      {messages.length === 0 && (
+        <p className="text-center text-gray-400">
+          Ask me about the weather in any city.
+        </p>
+      )}
+
+      {messages.map(message => (
+        <MessageBubble key={message.id} message={message} />
       ))}
 
-      {loading && <TypingIndicator />}
+      <TypingIndicator />
     </div>
   );
 };

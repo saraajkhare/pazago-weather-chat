@@ -1,6 +1,6 @@
 import type { Message } from "../types/message";
 
-type TopBarProps = {
+export type TopBarProps = {
   onToggleTheme: () => void;
   onClear: () => void;
   messages: Message[];
@@ -19,7 +19,6 @@ const TopBar = ({ onToggleTheme, onClear, messages }: TopBarProps) => {
     a.href = url;
     a.download = "chat-history.txt";
     a.click();
-
     URL.revokeObjectURL(url);
   };
 
@@ -30,26 +29,9 @@ const TopBar = ({ onToggleTheme, onClear, messages }: TopBarProps) => {
       </h1>
 
       <div className="flex gap-2">
-        <button
-          onClick={exportChat}
-          className="px-3 py-1 text-sm rounded border dark:border-gray-600 dark:text-white"
-        >
-          Export
-        </button>
-
-        <button
-          onClick={onClear}
-          className="px-3 py-1 text-sm rounded border dark:border-gray-600 dark:text-white"
-        >
-          Clear
-        </button>
-
-        <button
-          onClick={onToggleTheme}
-          className="px-3 py-1 text-sm rounded border dark:border-gray-600 dark:text-white"
-        >
-          Toggle theme
-        </button>
+        <button onClick={exportChat}>Export</button>
+        <button onClick={onClear}>Clear</button>
+        <button onClick={onToggleTheme}>Toggle theme</button>
       </div>
     </div>
   );
