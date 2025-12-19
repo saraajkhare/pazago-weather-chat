@@ -3,6 +3,9 @@ import type { Message } from "../types/message";
 
 const messageSound = new Audio("/message.mp3");
 
+// ✅ Render backend URL
+const API_URL = "https://pazago-weather-chat.onrender.com/weather";
+
 export const useWeatherAgent = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
@@ -33,18 +36,19 @@ export const useWeatherAgent = () => {
     scrollToBottom();
 
     try {
-      const res = await fetch("http://localhost:3001/weather", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    prompt: text,
-    stream: false,
-  }),
-});
-
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: text,
+          stream: false,
+        }),
+      });
 
       if (!res.ok) {
-        throw new Error("API failed");
+        throw new Error("Backend request failed");
       }
 
       const data = await res.json();
@@ -52,13 +56,16 @@ export const useWeatherAgent = () => {
       const agentMessage: Message = {
         id: crypto.randomUUID(),
         role: "agent",
-        content: data?.data?.response ?? "No response received.",
+        content:
+          data?.data?.response ??
+          data?.response ??
+          "No response received.",
         timestamp: new Date().toLocaleTimeString(),
       };
 
       setMessages(prev => [...prev, agentMessage]);
       messageSound.play().catch(() => {});
-    } catch {
+    } catch (error) {
       setMessages(prev => [
         ...prev,
         {
